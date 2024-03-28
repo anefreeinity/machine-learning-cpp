@@ -1,24 +1,34 @@
 #include <iostream>
-#include "./deep-learning/activation_function.cpp"
+#include <iomanip>
+#include "./deep-learning/lib/neural_network.h"
+using namespace ANEFreeInIty;
 
 int main()
 {
-    std::cout << ActivationFunction::Sigmoid(2) << std::endl;
-    std::cout << ActivationFunction::Sigmoid(20) << std::endl;
-    std::cout << ActivationFunction::Sigmoid(-2) << std::endl;
-    std::cout << ActivationFunction::Sigmoid(200) << std::endl;
-    std::cout << ActivationFunction::Sigmoid(12) << std::endl;
+    std::cout << std::fixed;
+    std::cout << std::setprecision(2);
 
-    Matrix_ANE *matrix = new Matrix_ANE();
-    matrix->Add({2, 4});
-    matrix->Add({3, 14});
-    matrix->Add({4, 41});
-    matrix->DisplayMatrix();
+    const int inputLayerSize = 2;
+    const int hiddenLayerSize = 3;
+    const int outputLayerSize = 1;
+    const int epoches = 10000;
 
-    std::cout << "---------" << std::endl;
+    NeuralNetwork network(inputLayerSize, hiddenLayerSize, outputLayerSize);
 
-    Matrix_ANE *sigmoid = ActivationFunction::Sigmoid(matrix);
-    sigmoid->DisplayMatrix();
+    // traning input data consists of {{hour of sleeping, hour of studying}}
+    // traning output data consists of {{score on exam}}
+    std::vector<std::vector<double>> trainingInputData = {{3, 5}, {5, 1}, {10, 2}};
+    std::vector<std::vector<double>> tranningOutputData = {{75}, {82}, {93}};
+
+    trainingInputData = network.Normalize(trainingInputData, inputLayerSize);
+    tranningOutputData = network.Normalize(tranningOutputData, outputLayerSize, 100);
+    network.Train(trainingInputData, tranningOutputData, epoches);
+
+    for (int i = 0; i < trainingInputData.size(); i++)
+    {
+        std::vector<double> output = network.Predict(trainingInputData[i]);
+        std::cout << output[0] * 100 << "%" << std::endl;
+    }
+
+    return 0;
 }
-
-// g++ *.cpp ./deep-learning/*.cpp -std=c++11 -o  main.out
