@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <cstdlib>
 #include "./activation_function.h"
 
 namespace ANEFreeInIty
