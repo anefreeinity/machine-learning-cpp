@@ -8,7 +8,7 @@ int main()
     std::cout << std::setprecision(2);
 
     const int inputLayerSize = 784;
-    const int hiddenLayerSize = 9;
+    const int hiddenLayerSize = 12;
     const int outputLayerSize = 10;
     const int epoches = 7;
     const int tranningDataSetSize = 60000;

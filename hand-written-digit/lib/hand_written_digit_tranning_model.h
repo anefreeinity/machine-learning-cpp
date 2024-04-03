@@ -21,6 +21,8 @@ namespace ANEFreeInIty
         const int TOTAL_PIXELS = 784;
         const int MAX_TRANNING_DATA_SIZE = 60000;
         const int MAX_TEST_DATA_SIZE = 10000;
+        const int MAGIC_NUMBER_FOR_DATASET_IMAGE = 2051;
+        const int MAGIC_NUMBER_FOR_DATASET_LABEL = 2049;
 
         NeuralNetwork _network;
         std::vector<std::vector<double>> _tranningImages;

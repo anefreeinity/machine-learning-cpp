@@ -86,20 +86,20 @@ void ANEFreeInIty::NeuralNetwork::BackPropagate(std::vector<double> &input, std:
     std::vector<double> outputLayerErrors(_outputLayerSize, 0.0);
     for (int i = 0; i < _outputLayerSize; i++)
     {
-        outputLayerErrors[i] = 2 * (target[i] - _outputLayerCalculatedOutput[i]) * ActivationFunction::SigmoidDerivation(_outputLayerCalculatedOutput[i]);
+        outputLayerErrors[i] = 2 * (_outputLayerCalculatedOutput[i] - target[i]) * ActivationFunction::SigmoidDerivation(_outputLayerCalculatedOutput[i]);
     }
 
     for (int i = 0; i < _hiddenLayerSize; i++)
     {
         for (int j = 0; j < _outputLayerSize; j++)
         {
-            _outputLayerWeights[i][j] += _learningRate * _hiddenLayerCalculatedOutput[i] * outputLayerErrors[j];
+            _outputLayerWeights[i][j] -= _learningRate * _hiddenLayerCalculatedOutput[i] * outputLayerErrors[j];
         }
     }
 
     for (int i = 0; i < _outputLayerSize; i++)
     {
-        _outputLayerBiases[i] += _learningRate * outputLayerErrors[i];
+        _outputLayerBiases[i] -= _learningRate * outputLayerErrors[i];
     }
 
     std::vector<double> hiddenLayerErrors(_hiddenLayerSize, 0.0);
@@ -117,13 +117,13 @@ void ANEFreeInIty::NeuralNetwork::BackPropagate(std::vector<double> &input, std:
     {
         for (int j = 0; j < _hiddenLayerSize; j++)
         {
-            _hiddenLayerWeights[i][j] += _learningRate * input[i] * hiddenLayerErrors[j];
+            _hiddenLayerWeights[i][j] -= _learningRate * input[i] * hiddenLayerErrors[j];
         }
     }
 
     for (int i = 0; i < _hiddenLayerSize; i++)
     {
-        _hiddenLayerBiases[i] += _learningRate * hiddenLayerErrors[i];
+        _hiddenLayerBiases[i] -= _learningRate * hiddenLayerErrors[i];
     }
 }
 

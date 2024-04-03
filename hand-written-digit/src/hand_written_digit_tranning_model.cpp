@@ -1,5 +1,26 @@
 #include "../lib/hand_written_digit_tranning_model.h"
 
+ANEFreeInIty::HandWrittenDigitTranningModel::HandWrittenDigitTranningModel() {}
+
+ANEFreeInIty::HandWrittenDigitTranningModel::HandWrittenDigitTranningModel(NeuralNetwork network, int tranningDataSetSize, int testDataSetSize)
+{
+    _network = network;
+    _traningDataSetSize = MAX_TRANNING_DATA_SIZE;
+    _testDataSetSize = MAX_TEST_DATA_SIZE;
+
+    if (tranningDataSetSize < MAX_TRANNING_DATA_SIZE)
+    {
+        _traningDataSetSize = tranningDataSetSize;
+    }
+
+    if (testDataSetSize < MAX_TEST_DATA_SIZE)
+    {
+        _testDataSetSize = testDataSetSize;
+    }
+
+    LoadData();
+}
+
 std::vector<double> ANEFreeInIty::HandWrittenDigitTranningModel::ConvertCharVectorToDoubleVectorAndNormalize(std::vector<unsigned char> &imageChar, int max)
 {
     if (imageChar.size() == 0)
@@ -25,32 +46,39 @@ int ANEFreeInIty::HandWrittenDigitTranningModel::reverseInt(int value)
     return ((int)ch1 << 24) + ((int)ch2 << 16) + ((int)ch3 << 8) + ch4;
 }
 
-std::vector<std::vector<double>> ANEFreeInIty::HandWrittenDigitTranningModel::ReadMnistIimages(std::string filename, int noOfImages)
+std::vector<std::vector<double>> ANEFreeInIty::HandWrittenDigitTranningModel::ReadMnistIimages(std::string fileName, int noOfImages)
 {
-    std::cout << "------------------------------------------------------------\n";
-    std::ifstream file(filename, std::ios::binary);
+    std::ifstream file(fileName, std::ios::binary);
     if (!file.is_open())
     {
-        std::cout << "Error opening file: " << filename << std::endl;
-        return {};
+        std::cout << "Error opening file: '" << fileName << "'" << std::endl;
+        std::cout << "Exiting program..." << std::endl;
+        exit(1);
     }
 
-    int magic_number, num_images, rows, cols;
-    file.read(reinterpret_cast<char *>(&magic_number), sizeof(magic_number));
-    magic_number = reverseInt(magic_number); // If endianness is different
-    file.read(reinterpret_cast<char *>(&num_images), sizeof(num_images));
-    num_images = reverseInt(num_images);
+    int magicNumber, totalNumOfImages, rows, cols;
+    file.read(reinterpret_cast<char *>(&magicNumber), sizeof(magicNumber));
+    magicNumber = reverseInt(magicNumber); // If endianness is different
+    file.read(reinterpret_cast<char *>(&totalNumOfImages), sizeof(totalNumOfImages));
+    totalNumOfImages = reverseInt(totalNumOfImages);
     file.read(reinterpret_cast<char *>(&rows), sizeof(rows));
     rows = reverseInt(rows);
     file.read(reinterpret_cast<char *>(&cols), sizeof(cols));
     cols = reverseInt(cols);
 
-    std::cout << "Magic number: " << magic_number << std::endl;
-    std::cout << "Number of images: " << num_images << std::endl;
+    if (magicNumber != MAGIC_NUMBER_FOR_DATASET_IMAGE)
+    {
+        std::cout << "Error: Magic number is incorrect. File: '" << fileName << "', try with Big-Endianness" << std::endl;
+        std::cout << "Exiting program..." << std::endl;
+        exit(1);
+    }
+
+    std::cout << "Magic number: " << magicNumber << std::endl;
+    std::cout << "Number of images: " << totalNumOfImages << std::endl;
     std::cout << "Image dimensions: " << int(rows) << "x" << int(cols) << std::endl;
 
     std::vector<std::vector<double>> images;
-    for (int i = 0; i < num_images && i < noOfImages; ++i)
+    for (int i = 0; i < totalNumOfImages && i < noOfImages; i++)
     {
         std::vector<unsigned char> image(rows * cols);
         file.read(reinterpret_cast<char *>(image.data()), rows * cols);
@@ -61,26 +89,33 @@ std::vector<std::vector<double>> ANEFreeInIty::HandWrittenDigitTranningModel::Re
     return images;
 }
 
-std::vector<double> ANEFreeInIty::HandWrittenDigitTranningModel::ReadMnistLabels(std::string filename, int noOfLabels)
+std::vector<double> ANEFreeInIty::HandWrittenDigitTranningModel::ReadMnistLabels(std::string fileName, int noOfLabels)
 {
-    std::cout << "------------------------------------------------------------\n";
-    std::ifstream file(filename, std::ios::binary);
+    std::ifstream file(fileName, std::ios::binary);
     if (!file.is_open())
     {
-        std::cout << "Error opening file: " << filename << std::endl;
-        return {};
+        std::cout << "Error opening file: '" << fileName << "'" << std::endl;
+        std::cout << "Exiting program..." << std::endl;
+        exit(1);
     }
 
-    int magic_number, num_labels;
-    file.read(reinterpret_cast<char *>(&magic_number), sizeof(magic_number));
-    magic_number = reverseInt(magic_number);
-    file.read(reinterpret_cast<char *>(&num_labels), sizeof(num_labels));
-    num_labels = reverseInt(num_labels);
+    int magicNumber, totalNumOfLabels;
+    file.read(reinterpret_cast<char *>(&magicNumber), sizeof(magicNumber));
+    magicNumber = reverseInt(magicNumber);
+    file.read(reinterpret_cast<char *>(&totalNumOfLabels), sizeof(totalNumOfLabels));
+    totalNumOfLabels = reverseInt(totalNumOfLabels);
 
-    std::cout << "Magic number: " << magic_number << std::endl;
-    std::cout << "Number of labels: " << num_labels << std::endl;
+    if (magicNumber != MAGIC_NUMBER_FOR_DATASET_LABEL)
+    {
+        std::cout << "Error: Magic number is incorrect. File: '" << fileName << "', try with Big-Endianness" << std::endl;
+        std::cout << "Exiting program..." << std::endl;
+        exit(1);
+    }
 
-    int bufferLength = num_labels > noOfLabels ? noOfLabels : num_labels;
+    std::cout << "Magic number: " << magicNumber << std::endl;
+    std::cout << "Number of labels: " << totalNumOfLabels << std::endl;
+
+    int bufferLength = totalNumOfLabels > noOfLabels ? noOfLabels : totalNumOfLabels;
     std::vector<unsigned char> labels(bufferLength);
     file.read(reinterpret_cast<char *>(labels.data()), bufferLength);
 
@@ -110,7 +145,7 @@ void ANEFreeInIty::HandWrittenDigitTranningModel::Verify(int index, bool isTrann
     }
 
     double num = isTranning ? _tranningLabels[index] : _testLabels[index];
-    std::cout << "Label: " << num << std::endl;
+    std::cout << "Label: " << int(num) << std::endl;
 }
 
 void ANEFreeInIty::HandWrittenDigitTranningModel::DisplayImageData(std::vector<std::vector<double>> &images)
@@ -142,54 +177,32 @@ std::vector<double> ANEFreeInIty::HandWrittenDigitTranningModel::MakeOutPutLabel
 
 void ANEFreeInIty::HandWrittenDigitTranningModel::LoadData()
 {
-    // std::string mnist_path = "./hand-written-digit/mnist-binary/";
-    //  std::string mnist_path = "../mnist/";
-
+    std::cout << "Reading tranning images.....\n";
     _tranningImages = ReadMnistIimages(MNIST_DATASET_PATH + MNIST_TRANNING_IMAGE_FILE_NAME, _traningDataSetSize);
-    std::cout << "No of Images: " << _tranningImages.size() << std::endl;
+    std::cout << "No of Images fetched: " << _tranningImages.size() << std::endl;
     std::cout << "No Of Pixels: " << _tranningImages[0].size() << std::endl;
-    // DisplayImageData(_tranningImages);
+    std::cout << "------------------------------------------------------------\n";
 
+    std::cout << "Reading tranning labels.....\n";
     _tranningLabels = ReadMnistLabels(MNIST_DATASET_PATH + MNIST_TRANNING_LABEL_FILE_NAME, _traningDataSetSize);
-    std::cout << "No of Labels: " << _tranningLabels.size() << std::endl;
-    // DisplayLabels(_tranningLabels);
+    std::cout << "No of Labels fetched: " << _tranningLabels.size() << std::endl;
+    std::cout << "------------------------------------------------------------\n";
 
+    std::cout << "Reading test images.....\n";
     _testImages = ReadMnistIimages(MNIST_DATASET_PATH + MNIST_TEST_IMAGE_FILE_NAME, _testDataSetSize);
-    std::cout << "No of Images: " << _testImages.size() << std::endl;
+    std::cout << "No of Images fetched: " << _testImages.size() << std::endl;
     std::cout << "No Of Pixels: " << _testImages[0].size() << std::endl;
-    // DisplayImageData(_testImages);
+    std::cout << "------------------------------------------------------------\n";
 
+    std::cout << "Reading test labels.....\n";
     _testLabels = ReadMnistLabels(MNIST_DATASET_PATH + MNIST_TEST_LABEL_FILE_NAME, _testDataSetSize);
-    std::cout << "No of Labels: " << _testLabels.size() << std::endl;
-    // DisplayLabels(_testLabels);
-
-    // Verify(1);
-    // Verify(1, false);
-}
-
-ANEFreeInIty::HandWrittenDigitTranningModel::HandWrittenDigitTranningModel() {}
-
-ANEFreeInIty::HandWrittenDigitTranningModel::HandWrittenDigitTranningModel(NeuralNetwork network, int tranningDataSetSize, int testDataSetSize)
-{
-    _network = network;
-    _traningDataSetSize = MAX_TRANNING_DATA_SIZE;
-    _testDataSetSize = MAX_TEST_DATA_SIZE;
-
-    if (tranningDataSetSize < MAX_TRANNING_DATA_SIZE)
-    {
-        _traningDataSetSize = tranningDataSetSize;
-    }
-
-    if (testDataSetSize < MAX_TEST_DATA_SIZE)
-    {
-        _testDataSetSize = testDataSetSize;
-    }
-
-    LoadData();
+    std::cout << "No of Labels fetched: " << _testLabels.size() << std::endl;
+    std::cout << "------------------------------------------------------------\n";
 }
 
 void ANEFreeInIty::HandWrittenDigitTranningModel::TrainDataSet(int epoches)
 {
+    std::cout << "Training Network.....\n";
     std::vector<std::vector<double>> outputs;
 
     for (double label : _tranningLabels)
@@ -232,7 +245,7 @@ void ANEFreeInIty::HandWrittenDigitTranningModel::TestDataSet()
             }
         }
 
-        std::cout << "Label is: " << _testLabels[i] << " Prediction is: " << predictedDigit << std::endl;
+        std::cout << "Label is: " << int(_testLabels[i]) << " Prediction is: " << predictedDigit << std::endl;
         if (_testLabels[i] == predictedDigit)
         {
             accuracyCounter++;
