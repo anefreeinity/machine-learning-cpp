@@ -5,6 +5,8 @@ double ANEFreeInIty::NeuralNetwork::GetNormalizedRandom()
     return rand() / double(RAND_MAX);
 }
 
+ANEFreeInIty::NeuralNetwork::NeuralNetwork() {}
+
 ANEFreeInIty::NeuralNetwork::NeuralNetwork(int inputLayerSize, int hiddenLayerSize, int outputLayerSize, double learningRate)
 {
     _inputLayerSize = inputLayerSize;
@@ -84,7 +86,7 @@ void ANEFreeInIty::NeuralNetwork::BackPropagate(std::vector<double> &input, std:
     std::vector<double> outputLayerErrors(_outputLayerSize, 0.0);
     for (int i = 0; i < _outputLayerSize; i++)
     {
-        outputLayerErrors[i] = (target[i] - _outputLayerCalculatedOutput[i]) * ActivationFunction::SigmoidDerivation(_outputLayerCalculatedOutput[i]);
+        outputLayerErrors[i] = 2 * (target[i] - _outputLayerCalculatedOutput[i]) * ActivationFunction::SigmoidDerivation(_outputLayerCalculatedOutput[i]);
     }
 
     for (int i = 0; i < _hiddenLayerSize; i++)

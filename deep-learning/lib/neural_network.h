@@ -28,6 +28,7 @@ namespace ANEFreeInIty
         void BackPropagate(std::vector<double> &, std::vector<double> &);
 
     public:
+        NeuralNetwork();
         NeuralNetwork(int, int, int, double learningRate = 0.1);
         std::vector<std::vector<double>> Normalize(std::vector<std::vector<double>> &, int, double factor = 0);
         void Train(std::vector<std::vector<double>> &trainingInputData, std::vector<std::vector<double>> &, int);
