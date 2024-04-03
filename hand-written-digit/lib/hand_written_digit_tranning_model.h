@@ -31,6 +31,7 @@ namespace ANEFreeInIty
         std::vector<double> _testLabels;
         int _traningDataSetSize;
         int _testDataSetSize;
+        bool _isLittleEndian;
 
         std::vector<double> ConvertCharVectorToDoubleVectorAndNormalize(std::vector<unsigned char> &imageChar, int max);
         int reverseInt(int value);
@@ -44,7 +45,7 @@ namespace ANEFreeInIty
 
     public:
         HandWrittenDigitTranningModel();
-        HandWrittenDigitTranningModel(NeuralNetwork network, int tranningDataSetSize, int testDataSetSize);
+        HandWrittenDigitTranningModel(NeuralNetwork network, int tranningDataSetSize, int testDataSetSize, bool isLittleEndian = true);
         void TrainDataSet(int epoches);
         void PredictDigit();
         void TestDataSet();

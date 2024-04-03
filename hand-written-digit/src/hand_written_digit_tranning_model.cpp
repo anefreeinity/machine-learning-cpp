@@ -2,11 +2,12 @@
 
 ANEFreeInIty::HandWrittenDigitTranningModel::HandWrittenDigitTranningModel() {}
 
-ANEFreeInIty::HandWrittenDigitTranningModel::HandWrittenDigitTranningModel(NeuralNetwork network, int tranningDataSetSize, int testDataSetSize)
+ANEFreeInIty::HandWrittenDigitTranningModel::HandWrittenDigitTranningModel(NeuralNetwork network, int tranningDataSetSize, int testDataSetSize, bool isLittleEndian)
 {
     _network = network;
     _traningDataSetSize = MAX_TRANNING_DATA_SIZE;
     _testDataSetSize = MAX_TEST_DATA_SIZE;
+    _isLittleEndian = isLittleEndian;
 
     if (tranningDataSetSize < MAX_TRANNING_DATA_SIZE)
     {
@@ -58,17 +59,21 @@ std::vector<std::vector<double>> ANEFreeInIty::HandWrittenDigitTranningModel::Re
 
     int magicNumber, totalNumOfImages, rows, cols;
     file.read(reinterpret_cast<char *>(&magicNumber), sizeof(magicNumber));
-    magicNumber = reverseInt(magicNumber); // If endianness is different
     file.read(reinterpret_cast<char *>(&totalNumOfImages), sizeof(totalNumOfImages));
-    totalNumOfImages = reverseInt(totalNumOfImages);
     file.read(reinterpret_cast<char *>(&rows), sizeof(rows));
-    rows = reverseInt(rows);
     file.read(reinterpret_cast<char *>(&cols), sizeof(cols));
-    cols = reverseInt(cols);
+
+    if (_isLittleEndian)
+    {
+        magicNumber = reverseInt(magicNumber);
+        totalNumOfImages = reverseInt(totalNumOfImages);
+        rows = reverseInt(rows);
+        cols = reverseInt(cols);
+    }
 
     if (magicNumber != MAGIC_NUMBER_FOR_DATASET_IMAGE)
     {
-        std::cout << "Error: Magic number is incorrect. File: '" << fileName << "', try with Big-Endianness" << std::endl;
+        std::cout << "Error: Magic number is incorrect. File: '" << fileName << "', try with " << (_isLittleEndian ? "Big-Endian" : "Little-Endian") << std::endl;
         std::cout << "Exiting program..." << std::endl;
         exit(1);
     }
@@ -101,13 +106,17 @@ std::vector<double> ANEFreeInIty::HandWrittenDigitTranningModel::ReadMnistLabels
 
     int magicNumber, totalNumOfLabels;
     file.read(reinterpret_cast<char *>(&magicNumber), sizeof(magicNumber));
-    magicNumber = reverseInt(magicNumber);
     file.read(reinterpret_cast<char *>(&totalNumOfLabels), sizeof(totalNumOfLabels));
-    totalNumOfLabels = reverseInt(totalNumOfLabels);
+
+    if (_isLittleEndian)
+    {
+        magicNumber = reverseInt(magicNumber);
+        totalNumOfLabels = reverseInt(totalNumOfLabels);
+    }
 
     if (magicNumber != MAGIC_NUMBER_FOR_DATASET_LABEL)
     {
-        std::cout << "Error: Magic number is incorrect. File: '" << fileName << "', try with Big-Endianness" << std::endl;
+        std::cout << "Error: Magic number is incorrect. File: '" << fileName << "', try with " << (_isLittleEndian ? "Big-Endian" : "Little-Endian") << std::endl;
         std::cout << "Exiting program..." << std::endl;
         exit(1);
     }
@@ -177,6 +186,7 @@ std::vector<double> ANEFreeInIty::HandWrittenDigitTranningModel::MakeOutPutLabel
 
 void ANEFreeInIty::HandWrittenDigitTranningModel::LoadData()
 {
+    std::cout << "Selected Endianness: " << (_isLittleEndian ? "Little-Endian" : "Big-Endian") << std::endl;
     std::cout << "Reading tranning images.....\n";
     _tranningImages = ReadMnistIimages(MNIST_DATASET_PATH + MNIST_TRANNING_IMAGE_FILE_NAME, _traningDataSetSize);
     std::cout << "No of Images fetched: " << _tranningImages.size() << std::endl;

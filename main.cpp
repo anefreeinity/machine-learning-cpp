@@ -13,9 +13,10 @@ int main()
     const int epoches = 7;
     const int tranningDataSetSize = 60000;
     const int testDataSetSize = 10000;
+    const bool isLittleEndian = true;
 
     NeuralNetwork network(inputLayerSize, hiddenLayerSize, outputLayerSize);
-    HandWrittenDigitTranningModel model(network, tranningDataSetSize, testDataSetSize);
+    HandWrittenDigitTranningModel model(network, tranningDataSetSize, testDataSetSize, isLittleEndian);
     model.TrainDataSet(epoches);
     model.TestDataSet();
     // model.PredictDigit();
