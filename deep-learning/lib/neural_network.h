@@ -1,6 +1,11 @@
 #pragma once
 #include <vector>
-#include <cstdlib>
+// #include <cstdlib>
+// #include <ctime>
+#include <numeric>
+#include <algorithm>
+#include <random>
+#include <iostream>
 #include "./activation_function.h"
 
 namespace ANEFreeInIty
@@ -31,7 +36,7 @@ namespace ANEFreeInIty
         NeuralNetwork();
         NeuralNetwork(int, int, int, double learningRate = 0.1);
         std::vector<std::vector<double>> Normalize(std::vector<std::vector<double>> &, int, double factor = 0);
-        void Train(std::vector<std::vector<double>> &trainingInputData, std::vector<std::vector<double>> &, int);
+        void Train(std::vector<std::vector<double>> &trainingInputData, std::vector<std::vector<double>> &, int, int);
         std::vector<double> Predict(std::vector<double> &);
     };
 }

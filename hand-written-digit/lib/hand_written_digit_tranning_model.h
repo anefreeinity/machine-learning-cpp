@@ -46,7 +46,7 @@ namespace ANEFreeInIty
     public:
         HandWrittenDigitTranningModel();
         HandWrittenDigitTranningModel(NeuralNetwork network, int tranningDataSetSize, int testDataSetSize, bool isLittleEndian = true);
-        void TrainDataSet(int epoches);
+        void TrainDataSet(int epoches, int batchSize);
         void PredictDigit();
         void TestDataSet();
     };

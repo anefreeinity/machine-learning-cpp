@@ -210,7 +210,7 @@ void ANEFreeInIty::HandWrittenDigitTranningModel::LoadData()
     std::cout << "------------------------------------------------------------\n";
 }
 
-void ANEFreeInIty::HandWrittenDigitTranningModel::TrainDataSet(int epoches)
+void ANEFreeInIty::HandWrittenDigitTranningModel::TrainDataSet(int epoches, int batchSize)
 {
     std::cout << "Training Network.....\n";
     std::vector<std::vector<double>> outputs;
@@ -220,7 +220,7 @@ void ANEFreeInIty::HandWrittenDigitTranningModel::TrainDataSet(int epoches)
         outputs.push_back(MakeOutPutLabelVector(label));
     }
 
-    _network.Train(_tranningImages, outputs, epoches);
+    _network.Train(_tranningImages, outputs, epoches, batchSize);
 }
 
 void ANEFreeInIty::HandWrittenDigitTranningModel::PredictDigit()
@@ -262,5 +262,5 @@ void ANEFreeInIty::HandWrittenDigitTranningModel::TestDataSet()
         }
     }
 
-    std::cout << "Total accuracy is: " << (double(accuracyCounter) / _testDataSetSize) * 100 << "%\n";
+    std::cout << "Total Accuracy is: " << (double(accuracyCounter) / _testDataSetSize) * 100 << "%\n";
 }

@@ -8,16 +8,18 @@ int main()
     std::cout << std::setprecision(2);
 
     const int inputLayerSize = 784;
-    const int hiddenLayerSize = 12;
+    const int hiddenLayerSize = 55;
     const int outputLayerSize = 10;
+    const double learningRate = 0.04;
     const int epoches = 7;
+    const int batchSize = 32;
     const int tranningDataSetSize = 60000;
     const int testDataSetSize = 10000;
     const bool isLittleEndian = true;
 
-    NeuralNetwork network(inputLayerSize, hiddenLayerSize, outputLayerSize);
+    NeuralNetwork network(inputLayerSize, hiddenLayerSize, outputLayerSize, learningRate);
     HandWrittenDigitTranningModel model(network, tranningDataSetSize, testDataSetSize, isLittleEndian);
-    model.TrainDataSet(epoches);
+    model.TrainDataSet(epoches, batchSize);
     model.TestDataSet();
     // model.PredictDigit();
 

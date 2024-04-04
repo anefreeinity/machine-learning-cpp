@@ -9,6 +9,7 @@ ANEFreeInIty::NeuralNetwork::NeuralNetwork() {}
 
 ANEFreeInIty::NeuralNetwork::NeuralNetwork(int inputLayerSize, int hiddenLayerSize, int outputLayerSize, double learningRate)
 {
+    // std::srand(static_cast<unsigned int>(std::time(nullptr)));
     _inputLayerSize = inputLayerSize;
     _hiddenLayerSize = hiddenLayerSize;
     _outputLayerSize = outputLayerSize;
@@ -165,15 +166,43 @@ std::vector<std::vector<double>> ANEFreeInIty::NeuralNetwork::Normalize(std::vec
     return normalizedData;
 }
 
-void ANEFreeInIty::NeuralNetwork::Train(std::vector<std::vector<double>> &trainingInputData, std::vector<std::vector<double>> &trainingOutputData, int epoches)
+void ANEFreeInIty::NeuralNetwork::Train(std::vector<std::vector<double>> &trainingInputData, std::vector<std::vector<double>> &trainingOutputData, int epoches, int batchSize)
 {
+    // for (int epoch = 0; epoch < epoches; epoch++)
+    // {
+    //     for (int i = 0; i < trainingInputData.size(); i++)
+    //     {
+    //         BackPropagate(trainingInputData[i], trainingOutputData[i]);
+    //     }
+    // }
+
+    int tranningInputDataSize = trainingInputData.size();
     for (int epoch = 0; epoch < epoches; epoch++)
     {
-        for (int i = 0; i < trainingInputData.size(); i++)
+        std::vector<int> indices(trainingInputData.size());
+        std::iota(indices.begin(), indices.end(), 0);
+        std::shuffle(indices.begin(), indices.end(), std::default_random_engine());
+
+        for (int i = 0; i < trainingInputData.size(); i += batchSize)
         {
-            BackPropagate(trainingInputData[i], trainingOutputData[i]);
+            std::vector<std::vector<double>> batchData(batchSize);
+            std::vector<std::vector<double>> batchLabels(batchSize);
+            for (int j = 0; j < batchSize; j++)
+            {
+                int idx = indices[i + j];
+                batchData[j] = trainingInputData[idx];
+                batchLabels[j] = trainingOutputData[idx];
+            }
+
+            std::cout << "Tranning Network current Epoch: (" << epoch + 1 << "/" << epoches << "), current Batch: (" << ((i + 1) / batchSize) + 1 << "/" << tranningInputDataSize / batchSize << ")" << std::endl;
+
+            for (int j = 0; j < batchSize; j++)
+            {
+                BackPropagate(batchData[j], batchLabels[j]);
+            }
         }
     }
+    std::cout << "Tranning Completed\n";
 }
 
 std::vector<double> ANEFreeInIty::NeuralNetwork::Predict(std::vector<double> &input)
