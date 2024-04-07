@@ -1,17 +1,17 @@
 #include "../lib/hand_written_digit_tranning_model.h"
 
-ANEFreeInIty::HandWrittenDigitTranningModel::HandWrittenDigitTranningModel() {}
+ANEFreeInIty::HandWrittenDigitTrainingModel::HandWrittenDigitTrainingModel() {}
 
-ANEFreeInIty::HandWrittenDigitTranningModel::HandWrittenDigitTranningModel(NeuralNetwork network, int tranningDataSetSize, int testDataSetSize, bool isLittleEndian)
+ANEFreeInIty::HandWrittenDigitTrainingModel::HandWrittenDigitTrainingModel(NeuralNetwork network, int trainingDataSetSize, int testDataSetSize, bool isLittleEndian)
 {
     _network = network;
-    _traningDataSetSize = MAX_TRANNING_DATA_SIZE;
+    _trainingDataSetSize = MAX_TRAINING_DATA_SIZE;
     _testDataSetSize = MAX_TEST_DATA_SIZE;
     _isLittleEndian = isLittleEndian;
 
-    if (tranningDataSetSize < MAX_TRANNING_DATA_SIZE)
+    if (trainingDataSetSize < MAX_TRAINING_DATA_SIZE)
     {
-        _traningDataSetSize = tranningDataSetSize;
+        _trainingDataSetSize = trainingDataSetSize;
     }
 
     if (testDataSetSize < MAX_TEST_DATA_SIZE)
@@ -22,7 +22,7 @@ ANEFreeInIty::HandWrittenDigitTranningModel::HandWrittenDigitTranningModel(Neura
     LoadData();
 }
 
-std::vector<double> ANEFreeInIty::HandWrittenDigitTranningModel::ConvertCharVectorToDoubleVectorAndNormalize(std::vector<unsigned char> &imageChar, int max)
+std::vector<double> ANEFreeInIty::HandWrittenDigitTrainingModel::ConvertCharVectorToDoubleVectorAndNormalize(std::vector<unsigned char> &imageChar, int max)
 {
     if (imageChar.size() == 0)
     {
@@ -37,7 +37,7 @@ std::vector<double> ANEFreeInIty::HandWrittenDigitTranningModel::ConvertCharVect
     return imageDouble;
 }
 
-int ANEFreeInIty::HandWrittenDigitTranningModel::reverseInt(int value)
+int ANEFreeInIty::HandWrittenDigitTrainingModel::reverseInt(int value)
 {
     unsigned char ch1, ch2, ch3, ch4;
     ch1 = value & 255;
@@ -47,7 +47,7 @@ int ANEFreeInIty::HandWrittenDigitTranningModel::reverseInt(int value)
     return ((int)ch1 << 24) + ((int)ch2 << 16) + ((int)ch3 << 8) + ch4;
 }
 
-std::vector<std::vector<double>> ANEFreeInIty::HandWrittenDigitTranningModel::ReadMnistIimages(std::string fileName, int noOfImages)
+std::vector<std::vector<double>> ANEFreeInIty::HandWrittenDigitTrainingModel::ReadMnistImages(std::string fileName, int noOfImages)
 {
     std::ifstream file(fileName, std::ios::binary);
     if (!file.is_open())
@@ -94,7 +94,7 @@ std::vector<std::vector<double>> ANEFreeInIty::HandWrittenDigitTranningModel::Re
     return images;
 }
 
-std::vector<double> ANEFreeInIty::HandWrittenDigitTranningModel::ReadMnistLabels(std::string fileName, int noOfLabels)
+std::vector<double> ANEFreeInIty::HandWrittenDigitTrainingModel::ReadMnistLabels(std::string fileName, int noOfLabels)
 {
     std::ifstream file(fileName, std::ios::binary);
     if (!file.is_open())
@@ -132,9 +132,9 @@ std::vector<double> ANEFreeInIty::HandWrittenDigitTranningModel::ReadMnistLabels
     return ConvertCharVectorToDoubleVectorAndNormalize(labels, 1);
 }
 
-void ANEFreeInIty::HandWrittenDigitTranningModel::Verify(int index, bool isTranning)
+void ANEFreeInIty::HandWrittenDigitTrainingModel::Verify(int index, bool isTraining)
 {
-    std::vector<std::vector<double>> &images = isTranning ? _tranningImages : _testImages;
+    std::vector<std::vector<double>> &images = isTraining ? _trainingImages : _testImages;
 
     for (int i = 0; i < TOTAL_PIXELS; i++)
     {
@@ -153,11 +153,11 @@ void ANEFreeInIty::HandWrittenDigitTranningModel::Verify(int index, bool isTrann
         }
     }
 
-    double num = isTranning ? _tranningLabels[index] : _testLabels[index];
+    double num = isTraining ? _trainingLabels[index] : _testLabels[index];
     std::cout << "Label: " << int(num) << std::endl;
 }
 
-void ANEFreeInIty::HandWrittenDigitTranningModel::DisplayImageData(std::vector<std::vector<double>> &images)
+void ANEFreeInIty::HandWrittenDigitTrainingModel::DisplayImageData(std::vector<std::vector<double>> &images)
 {
     for (std::vector<double> image : images)
     {
@@ -169,7 +169,7 @@ void ANEFreeInIty::HandWrittenDigitTranningModel::DisplayImageData(std::vector<s
     }
 }
 
-void ANEFreeInIty::HandWrittenDigitTranningModel::DisplayLabels(std::vector<double> &labels)
+void ANEFreeInIty::HandWrittenDigitTrainingModel::DisplayLabels(std::vector<double> &labels)
 {
     for (auto label : labels)
     {
@@ -177,29 +177,29 @@ void ANEFreeInIty::HandWrittenDigitTranningModel::DisplayLabels(std::vector<doub
     }
 }
 
-std::vector<double> ANEFreeInIty::HandWrittenDigitTranningModel::MakeOutPutLabelVector(int digit)
+std::vector<double> ANEFreeInIty::HandWrittenDigitTrainingModel::MakeOutPutLabelVector(int digit)
 {
     std::vector<double> output(OUTPUT_LAYER_LENGTH, 0.0);
     output[digit] = 1;
     return output;
 }
 
-void ANEFreeInIty::HandWrittenDigitTranningModel::LoadData()
+void ANEFreeInIty::HandWrittenDigitTrainingModel::LoadData()
 {
     std::cout << "Selected Endianness: " << (_isLittleEndian ? "Little-Endian" : "Big-Endian") << std::endl;
-    std::cout << "Reading tranning images.....\n";
-    _tranningImages = ReadMnistIimages(MNIST_DATASET_PATH + MNIST_TRANNING_IMAGE_FILE_NAME, _traningDataSetSize);
-    std::cout << "No of Images fetched: " << _tranningImages.size() << std::endl;
-    std::cout << "No Of Pixels: " << _tranningImages[0].size() << std::endl;
+    std::cout << "Reading training images.....\n";
+    _trainingImages = ReadMnistImages(MNIST_DATASET_PATH + MNIST_TRAINING_IMAGE_FILE_NAME, _trainingDataSetSize);
+    std::cout << "No of Images fetched: " << _trainingImages.size() << std::endl;
+    std::cout << "No Of Pixels: " << _trainingImages[0].size() << std::endl;
     std::cout << "------------------------------------------------------------\n";
 
-    std::cout << "Reading tranning labels.....\n";
-    _tranningLabels = ReadMnistLabels(MNIST_DATASET_PATH + MNIST_TRANNING_LABEL_FILE_NAME, _traningDataSetSize);
-    std::cout << "No of Labels fetched: " << _tranningLabels.size() << std::endl;
+    std::cout << "Reading training labels.....\n";
+    _trainingLabels = ReadMnistLabels(MNIST_DATASET_PATH + MNIST_TRAINING_LABEL_FILE_NAME, _trainingDataSetSize);
+    std::cout << "No of Labels fetched: " << _trainingLabels.size() << std::endl;
     std::cout << "------------------------------------------------------------\n";
 
     std::cout << "Reading test images.....\n";
-    _testImages = ReadMnistIimages(MNIST_DATASET_PATH + MNIST_TEST_IMAGE_FILE_NAME, _testDataSetSize);
+    _testImages = ReadMnistImages(MNIST_DATASET_PATH + MNIST_TEST_IMAGE_FILE_NAME, _testDataSetSize);
     std::cout << "No of Images fetched: " << _testImages.size() << std::endl;
     std::cout << "No Of Pixels: " << _testImages[0].size() << std::endl;
     std::cout << "------------------------------------------------------------\n";
@@ -210,20 +210,20 @@ void ANEFreeInIty::HandWrittenDigitTranningModel::LoadData()
     std::cout << "------------------------------------------------------------\n";
 }
 
-void ANEFreeInIty::HandWrittenDigitTranningModel::TrainDataSet(int epoches, int batchSize)
+void ANEFreeInIty::HandWrittenDigitTrainingModel::TrainDataSet(int epochs, int batchSize)
 {
     std::cout << "Training Network.....\n";
     std::vector<std::vector<double>> outputs;
 
-    for (double label : _tranningLabels)
+    for (double label : _trainingLabels)
     {
         outputs.push_back(MakeOutPutLabelVector(label));
     }
 
-    _network.Train(_tranningImages, outputs, epoches, batchSize);
+    _network.Train(_trainingImages, outputs, epochs, batchSize);
 }
 
-void ANEFreeInIty::HandWrittenDigitTranningModel::PredictDigit()
+void ANEFreeInIty::HandWrittenDigitTrainingModel::PredictDigit()
 {
     for (int i = 0; i < _testImages.size(); i++)
     {
@@ -237,7 +237,7 @@ void ANEFreeInIty::HandWrittenDigitTranningModel::PredictDigit()
     }
 }
 
-void ANEFreeInIty::HandWrittenDigitTranningModel::TestDataSet()
+void ANEFreeInIty::HandWrittenDigitTrainingModel::TestDataSet()
 {
     int accuracyCounter = 0;
     for (int i = 0; i < _testImages.size(); i++)
