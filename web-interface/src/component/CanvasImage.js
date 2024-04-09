@@ -10,9 +10,8 @@ export default function CanvasImage({
   const scale = imageWidth / 28;
   useEffect(() => {
     imageData && makePicture(canvasRef, imageData, scale);
-  }, []);
+  }, [imageData, scale]);
 
-  imageData && makePicture(canvasRef, imageData, scale);
   return (
     <canvas
       className={className}
