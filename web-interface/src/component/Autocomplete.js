@@ -36,7 +36,6 @@ function AutoComplete({
       }}
       onChange={(event, newImage) => {
         setCurrentSelectedImage(newImage);
-        console.log(newImage);
       }}
       id="country-select-demo"
       sx={{ width: (width * 3) / 5 }}
@@ -53,6 +52,7 @@ function AutoComplete({
           <div className="w-1/2">{image.id}</div>
           <div className="flex w-1/2 justify-end px-2">
             <CanvasImage
+              className="rounded border border-zinc-600"
               imageWidth={25}
               imageHeight={25}
               imageData={image.image}

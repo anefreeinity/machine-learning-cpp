@@ -24,7 +24,7 @@ function App() {
       setWindowHeight(window.innerHeight);
     };
 
-    const fetchData = () => {
+    const fetchImages = () => {
       let imageObjs = IMAGES.map((image, i) => {
         let label = image.label || 0;
         return {
@@ -38,7 +38,7 @@ function App() {
       setImages(imageObjs);
     };
 
-    fetchData();
+    fetchImages();
     window.addEventListener("resize", handleResize);
 
     return () => {
