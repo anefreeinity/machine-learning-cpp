@@ -16,8 +16,10 @@ int main()
     const int trainingDataSetSize = 60000;
     const int testDataSetSize = 10000;
     const bool isLittleEndian = true;
+    const std::string relativePath = "./";
+    bool readWeightsAndBiasesFromFile = false;
 
-    NeuralNetwork network(inputLayerSize, hiddenLayerSize, outputLayerSize, learningRate);
+    NeuralNetwork network(inputLayerSize, hiddenLayerSize, outputLayerSize, learningRate, relativePath, readWeightsAndBiasesFromFile);
     HandWrittenDigitTrainingModel model(network, trainingDataSetSize, testDataSetSize, isLittleEndian);
     model.TrainDataSet(epochs, batchSize);
     model.TestDataSet();

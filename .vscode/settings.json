@@ -57,7 +57,12 @@
     "__tree": "cpp",
     "execution": "cpp",
     "fstream": "cpp",
-    "map": "cpp"
+    "map": "cpp",
+    "codecvt": "cpp",
+    "condition_variable": "cpp",
+    "deque": "cpp",
+    "regex": "cpp",
+    "stack": "cpp"
   },
   "cSpell.words": ["ANEFREEINITY", "MNIST"]
 }

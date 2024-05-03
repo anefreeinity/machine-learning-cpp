@@ -9,7 +9,7 @@ namespace ANEFreeInIty
     class HandWrittenDigitTrainingModel
     {
     private:
-        const std::string MNIST_DATASET_PATH = "./hand-written-digit/mnist-binary/";
+        const std::string MNIST_DATASET_PATH = "hand-written-digit/mnist-binary/";
         const std::string MNIST_TRAINING_IMAGE_FILE_NAME = "train-images-idx3-ubyte";
         const std::string MNIST_TRAINING_LABEL_FILE_NAME = "train-labels-idx1-ubyte";
         const std::string MNIST_TEST_IMAGE_FILE_NAME = "t10k-images-idx3-ubyte";
@@ -23,6 +23,7 @@ namespace ANEFreeInIty
         const int MAX_TEST_DATA_SIZE = 10000;
         const int MAGIC_NUMBER_FOR_DATASET_IMAGE = 2051;
         const int MAGIC_NUMBER_FOR_DATASET_LABEL = 2049;
+        std::string RELATIVE_PATH = "./";
 
         NeuralNetwork _network;
         std::vector<std::vector<double>> _trainingImages;
@@ -49,5 +50,6 @@ namespace ANEFreeInIty
         void TrainDataSet(int epochs, int batchSize);
         void PredictDigit();
         void TestDataSet();
+        int Predict(std::vector<double> &pixels);
     };
 }

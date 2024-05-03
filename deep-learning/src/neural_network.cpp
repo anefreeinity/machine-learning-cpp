@@ -7,14 +7,15 @@ double ANEFreeInIty::NeuralNetwork::GetNormalizedRandom()
 
 ANEFreeInIty::NeuralNetwork::NeuralNetwork() {}
 
-ANEFreeInIty::NeuralNetwork::NeuralNetwork(int inputLayerSize, int hiddenLayerSize, int outputLayerSize, double learningRate)
+ANEFreeInIty::NeuralNetwork::NeuralNetwork(int inputLayerSize, int hiddenLayerSize, int outputLayerSize, double learningRate, std::string relativePath, bool extractWeightsAndBiases)
 {
-    // std::srand(static_cast<unsigned int>(std::time(nullptr)));
+    _relativePath = relativePath;
     _inputLayerSize = inputLayerSize;
     _hiddenLayerSize = hiddenLayerSize;
     _outputLayerSize = outputLayerSize;
 
     _learningRate = learningRate;
+    _extractWeightsAndBiases = extractWeightsAndBiases;
 
     _hiddenLayerWeights.resize(_inputLayerSize, std::vector<double>(_hiddenLayerSize, 0.0));
     _outputLayerWeights.resize(_hiddenLayerSize, std::vector<double>(_outputLayerSize, 0.0));
@@ -25,30 +26,40 @@ ANEFreeInIty::NeuralNetwork::NeuralNetwork(int inputLayerSize, int hiddenLayerSi
     _hiddenLayerCalculatedOutput.resize(_hiddenLayerSize, 0.0);
     _outputLayerCalculatedOutput.resize(_outputLayerSize, 0.0);
 
-    for (int i = 0; i < _inputLayerSize; i++)
+    if (_extractWeightsAndBiases)
     {
-        for (int j = 0; j < _hiddenLayerSize; j++)
+        _hiddenLayerWeights = Read2DArray(HIDDEN_LAYER_WEIGHTS_FILE_NAME);
+        _outputLayerWeights = Read2DArray(OUTPUT_LAYER_WEIGHTS_FILE_NAME);
+        _hiddenLayerBiases = Read(HIDDEN_LAYER_BIASES_FILE_NAME);
+        _outputLayerBiases = Read(OUTPUT_LAYER_BIASES_FILE_NAME);
+    }
+    else
+    {
+        for (int i = 0; i < _inputLayerSize; i++)
         {
-            _hiddenLayerWeights[i][j] = GetNormalizedRandom();
+            for (int j = 0; j < _hiddenLayerSize; j++)
+            {
+                _hiddenLayerWeights[i][j] = GetNormalizedRandom();
+            }
         }
-    }
 
-    for (int i = 0; i < _hiddenLayerSize; i++)
-    {
-        for (int j = 0; j < _outputLayerSize; j++)
+        for (int i = 0; i < _hiddenLayerSize; i++)
         {
-            _outputLayerWeights[i][j] = GetNormalizedRandom();
+            for (int j = 0; j < _outputLayerSize; j++)
+            {
+                _outputLayerWeights[i][j] = GetNormalizedRandom();
+            }
         }
-    }
 
-    for (int i = 0; i < _hiddenLayerSize; i++)
-    {
-        _hiddenLayerBiases[i] = GetNormalizedRandom();
-    }
+        for (int i = 0; i < _hiddenLayerSize; i++)
+        {
+            _hiddenLayerBiases[i] = GetNormalizedRandom();
+        }
 
-    for (int i = 0; i < _outputLayerSize; i++)
-    {
-        _outputLayerBiases[i] = GetNormalizedRandom();
+        for (int i = 0; i < _outputLayerSize; i++)
+        {
+            _outputLayerBiases[i] = GetNormalizedRandom();
+        }
     }
 }
 
@@ -195,9 +206,114 @@ void ANEFreeInIty::NeuralNetwork::Train(std::vector<std::vector<double>> &traini
         }
     }
     std::cout << "Training Completed\n";
+    Save(_hiddenLayerWeights, HIDDEN_LAYER_WEIGHTS_FILE_NAME);
+    Save(_outputLayerWeights, OUTPUT_LAYER_WEIGHTS_FILE_NAME);
+    Save(_hiddenLayerBiases, HIDDEN_LAYER_BIASES_FILE_NAME);
+    Save(_outputLayerBiases, OUTPUT_LAYER_BIASES_FILE_NAME);
 }
 
 std::vector<double> ANEFreeInIty::NeuralNetwork::Predict(std::vector<double> &input)
 {
     return Forward(input);
+}
+
+void ANEFreeInIty::NeuralNetwork::Save(std::vector<std::vector<double>> &data, std::string fileName)
+{
+    std::cout << "saving...\n";
+    std::ofstream outfile(_relativePath + fileName);
+
+    for (const auto &row : data)
+    {
+        for (size_t i = 0; i < row.size(); ++i)
+        {
+            outfile << row[i];
+            if (i != row.size() - 1)
+            {
+                outfile << ",";
+            }
+        }
+        outfile << "\n";
+    }
+
+    outfile.close();
+    std::cout << "data saved to " << _relativePath + fileName << std::endl;
+}
+
+void ANEFreeInIty::NeuralNetwork::Save(std::vector<double> &data, std::string fileName)
+{
+    std::cout << "saving...\n";
+    std::ofstream outfile(_relativePath + fileName);
+
+    for (const auto &row : data)
+    {
+        outfile << row << "\n";
+    }
+
+    outfile.close();
+    std::cout << "data saved to " << _relativePath + fileName << std::endl;
+}
+
+std::vector<std::vector<double>> ANEFreeInIty::NeuralNetwork::Read2DArray(std::string fileName)
+{
+    std::cout << "Reading data from " << _relativePath + fileName << std::endl;
+    std::vector<std::vector<double>> data;
+    std::ifstream infile(_relativePath + fileName);
+
+    std::string line;
+    while (std::getline(infile, line))
+    {
+        std::vector<double> row;
+        std::stringstream ss(line);
+        std::string cell;
+        while (std::getline(ss, cell, ','))
+        {
+            try
+            {
+                double value = std::stod(cell);
+                row.push_back(value);
+            }
+            catch (...)
+            {
+                std::cerr << "Error parsing cell: " << cell << std::endl;
+            }
+        }
+        data.push_back(row);
+    }
+
+    infile.close();
+    std::cout << "completed reading data from " << _relativePath + fileName << std::endl;
+
+    return data;
+}
+
+std::vector<double> ANEFreeInIty::NeuralNetwork::Read(std::string fileName)
+{
+    std::cout << "Reading data from " << _relativePath + fileName << std::endl;
+    std::vector<double> data;
+    std::ifstream infile(_relativePath + fileName);
+    std::string line;
+    while (std::getline(infile, line))
+    {
+        std::stringstream ss(line);
+        std::string cell;
+        while (std::getline(ss, cell, ','))
+        {
+            data.push_back(std::stod(cell));
+        }
+    }
+
+    infile.close();
+    std::cout << "completed reading data from " << _relativePath + fileName << std::endl;
+
+    return data;
+}
+
+std::string ANEFreeInIty::NeuralNetwork::GetRelativePath()
+{
+    return _relativePath;
+}
+
+bool ANEFreeInIty::NeuralNetwork::GetExtractWeightsAndBiases()
+{
+    return _extractWeightsAndBiases;
 }

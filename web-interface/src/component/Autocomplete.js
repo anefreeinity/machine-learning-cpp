@@ -25,6 +25,7 @@ function AutoComplete({
   images,
   className,
   setCurrentSelectedImage,
+  setPrediction,
 }) {
   return (
     <Autocomplete
@@ -32,9 +33,10 @@ function AutoComplete({
         margin: 0,
         position: "absolute",
         top: `${height / 4}px`,
-        left: `${width / 2 - (width * 3) / 10 - 18}px`,
+        left: `${width / 2 - (width * 3) / 10 - 20}px`,
       }}
       onChange={(event, newImage) => {
+        setPrediction(null);
         setCurrentSelectedImage(newImage);
       }}
       id="country-select-demo"

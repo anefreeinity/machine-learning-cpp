@@ -19,7 +19,11 @@ ANEFreeInIty::HandWrittenDigitTrainingModel::HandWrittenDigitTrainingModel(Neura
         _testDataSetSize = testDataSetSize;
     }
 
-    LoadData();
+    RELATIVE_PATH = _network.GetRelativePath();
+    if (!_network.GetExtractWeightsAndBiases())
+    {
+        LoadData();
+    }
 }
 
 std::vector<double> ANEFreeInIty::HandWrittenDigitTrainingModel::ConvertCharVectorToDoubleVectorAndNormalize(std::vector<unsigned char> &imageChar, int max)
@@ -188,24 +192,24 @@ void ANEFreeInIty::HandWrittenDigitTrainingModel::LoadData()
 {
     std::cout << "Selected Endianness: " << (_isLittleEndian ? "Little-Endian" : "Big-Endian") << std::endl;
     std::cout << "Reading training images.....\n";
-    _trainingImages = ReadMnistImages(MNIST_DATASET_PATH + MNIST_TRAINING_IMAGE_FILE_NAME, _trainingDataSetSize);
+    _trainingImages = ReadMnistImages(RELATIVE_PATH + MNIST_DATASET_PATH + MNIST_TRAINING_IMAGE_FILE_NAME, _trainingDataSetSize);
     std::cout << "No of Images fetched: " << _trainingImages.size() << std::endl;
     std::cout << "No Of Pixels: " << _trainingImages[0].size() << std::endl;
     std::cout << "------------------------------------------------------------\n";
 
     std::cout << "Reading training labels.....\n";
-    _trainingLabels = ReadMnistLabels(MNIST_DATASET_PATH + MNIST_TRAINING_LABEL_FILE_NAME, _trainingDataSetSize);
+    _trainingLabels = ReadMnistLabels(RELATIVE_PATH + MNIST_DATASET_PATH + MNIST_TRAINING_LABEL_FILE_NAME, _trainingDataSetSize);
     std::cout << "No of Labels fetched: " << _trainingLabels.size() << std::endl;
     std::cout << "------------------------------------------------------------\n";
 
     std::cout << "Reading test images.....\n";
-    _testImages = ReadMnistImages(MNIST_DATASET_PATH + MNIST_TEST_IMAGE_FILE_NAME, _testDataSetSize);
+    _testImages = ReadMnistImages(RELATIVE_PATH + MNIST_DATASET_PATH + MNIST_TEST_IMAGE_FILE_NAME, _testDataSetSize);
     std::cout << "No of Images fetched: " << _testImages.size() << std::endl;
     std::cout << "No Of Pixels: " << _testImages[0].size() << std::endl;
     std::cout << "------------------------------------------------------------\n";
 
     std::cout << "Reading test labels.....\n";
-    _testLabels = ReadMnistLabels(MNIST_DATASET_PATH + MNIST_TEST_LABEL_FILE_NAME, _testDataSetSize);
+    _testLabels = ReadMnistLabels(RELATIVE_PATH + MNIST_DATASET_PATH + MNIST_TEST_LABEL_FILE_NAME, _testDataSetSize);
     std::cout << "No of Labels fetched: " << _testLabels.size() << std::endl;
     std::cout << "------------------------------------------------------------\n";
 }
@@ -263,4 +267,22 @@ void ANEFreeInIty::HandWrittenDigitTrainingModel::TestDataSet()
     }
 
     std::cout << "Total Accuracy is: " << (double(accuracyCounter) / _testDataSetSize) * 100 << "%\n";
+}
+
+int ANEFreeInIty::HandWrittenDigitTrainingModel::Predict(std::vector<double> &pixels)
+{
+    std::vector<double> predictedDigitBuffer = _network.Predict(pixels);
+    double max = predictedDigitBuffer[0];
+    int predictedDigit = -1;
+
+    for (int j = 1; j < OUTPUT_LAYER_LENGTH; j++)
+    {
+        if (max < predictedDigitBuffer[j])
+        {
+            max = predictedDigitBuffer[j];
+            predictedDigit = j;
+        }
+    }
+
+    return predictedDigit;
 }

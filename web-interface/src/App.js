@@ -17,6 +17,7 @@ function App() {
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [images, setImages] = useState([]);
   const [currentSelectedImage, setCurrentSelectedImage] = useState(null);
+  const [prediction, setPrediction] = useState(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -60,6 +61,7 @@ function App() {
             height={windowHeight}
             images={images}
             setCurrentSelectedImage={setCurrentSelectedImage}
+            setPrediction={setPrediction}
           />
         </ThemeProvider>
       </div>
@@ -71,6 +73,8 @@ function App() {
               width={windowWidth}
               height={windowHeight}
               selectedImage={currentSelectedImage}
+              prediction={prediction}
+              setPrediction={setPrediction}
             />
           </ThemeProvider>
         </div>
