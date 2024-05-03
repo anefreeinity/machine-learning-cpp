@@ -273,7 +273,7 @@ int ANEFreeInIty::HandWrittenDigitTrainingModel::Predict(std::vector<double> &pi
 {
     std::vector<double> predictedDigitBuffer = _network.Predict(pixels);
     double max = predictedDigitBuffer[0];
-    int predictedDigit = -1;
+    int predictedDigit = 0;
 
     for (int j = 1; j < OUTPUT_LAYER_LENGTH; j++)
     {
