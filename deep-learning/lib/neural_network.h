@@ -1,12 +1,9 @@
 #pragma once
-#include <vector>
 #include <numeric>
 #include <algorithm>
 #include <random>
-#include <iostream>
-#include <fstream>
-#include <sstream>
 #include "./activation_function.h"
+#include "../../file-system/lib/file_system.h"
 
 namespace ANEFreeInIty
 {
@@ -34,14 +31,11 @@ namespace ANEFreeInIty
         std::vector<double> _outputLayerCalculatedOutput;
 
         double _learningRate;
+        FileSystem _fileSystem;
 
         double GetNormalizedRandom();
         std::vector<double> Forward(std::vector<double> &);
         void BackPropagate(std::vector<double> &, std::vector<double> &);
-        void Save(std::vector<std::vector<double>> &, std::string fileName = "demo.csv");
-        void Save(std::vector<double> &, std::string fileName = "demo.csv");
-        std::vector<std::vector<double>> Read2DArray(std::string fileName = "demo.csv");
-        std::vector<double> Read(std::string fileName = "demo.csv");
 
     public:
         NeuralNetwork();

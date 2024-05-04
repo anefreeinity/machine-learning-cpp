@@ -37,12 +37,3 @@ extern "C"
         return -1;
     }
 }
-
-// g++ -c -fPIC *.cpp -std=c++11
-// g++ -c -fPIC ../deep-learning/src/*.cpp -std=c++11
-// g++ -c -fPIC ../hand-written-digit/src/hand_written_digit_tranning_model.cpp -std=c++11
-
-// g++ -dynamiclib -o hand_written_digit_lib.dylib *.o
-
-// for linux
-// g++ -shared -o shared.so *.o

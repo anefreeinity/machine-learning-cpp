@@ -1,0 +1,2 @@
+hidden and output layer weights and biases are stored here as .csv formate in order to 
+use the model again and again without training it multiple times, which is time costly.

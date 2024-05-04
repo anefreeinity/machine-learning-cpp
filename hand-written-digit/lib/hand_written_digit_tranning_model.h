@@ -1,7 +1,4 @@
 #pragma once
-#include <iostream>
-#include <fstream>
-#include <vector>
 #include "../../deep-learning/lib/neural_network.h"
 
 namespace ANEFreeInIty
