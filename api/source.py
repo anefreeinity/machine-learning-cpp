@@ -1,7 +1,21 @@
 from flask import Flask, request
 from flask_cors import CORS
 from ctypes import cdll, c_int
-lib = cdll.LoadLibrary('../shared/hand_written_digit_lib.dylib')
+import platform
+import sys
+
+os_name = platform.system()
+lib_path = '../shared/hand_written_digit_lib'
+
+if(os_name == 'Linux'):
+    lib = cdll.LoadLibrary(f"{lib_path}.so")
+elif(os_name == 'Windows'):
+    lib = cdll.LoadLibrary(f"{lib_path}.dll")
+elif(os_name == 'Darwin'):
+    lib = cdll.LoadLibrary(f"{lib_path}.dylib")
+else:
+    print("Unsupported shared OS")
+    sys.exit(1)
 
 class PredictDigit(object):
     def __init__(self):
