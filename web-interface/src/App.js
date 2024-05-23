@@ -5,6 +5,7 @@ import IMAGES from "./assets/image_data.json";
 import DashBoard from "./component/DashBoard";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import DigitDrawing from "./component/DigitDrawing";
 
 const darkTheme = createTheme({
   palette: {
@@ -73,6 +74,19 @@ function App() {
               width={windowWidth}
               height={windowHeight}
               selectedImage={currentSelectedImage}
+              prediction={prediction}
+              setPrediction={setPrediction}
+            />
+          </ThemeProvider>
+        </div>
+      )}
+      {!currentSelectedImage && (
+        <div className="z-10">
+          <ThemeProvider theme={darkTheme}>
+            <CssBaseline />
+            <DigitDrawing
+              width={windowWidth}
+              height={windowHeight}
               prediction={prediction}
               setPrediction={setPrediction}
             />
