@@ -2,7 +2,7 @@
 
 ANEFreeInIty::HandWrittenDigitTrainingModel::HandWrittenDigitTrainingModel() {}
 
-ANEFreeInIty::HandWrittenDigitTrainingModel::HandWrittenDigitTrainingModel(NeuralNetwork network, int trainingDataSetSize, int testDataSetSize, bool isLittleEndian)
+ANEFreeInIty::HandWrittenDigitTrainingModel::HandWrittenDigitTrainingModel(DeepNeuralNetwork network, int trainingDataSetSize, int testDataSetSize, bool isLittleEndian)
 {
     _network = network;
     _trainingDataSetSize = MAX_TRAINING_DATA_SIZE;

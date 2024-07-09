@@ -8,7 +8,7 @@ int main()
     std::cout << std::setprecision(2);
 
     const int inputLayerSize = 784;
-    const int hiddenLayerSize = 55;
+    const std::vector<int> hiddenLayerSize = {55};
     const int outputLayerSize = 10;
     const double learningRate = 0.04;
     const int epochs = 7;
@@ -19,7 +19,7 @@ int main()
     const std::string relativePath = "./";
     bool readWeightsAndBiasesFromFile = false;
 
-    NeuralNetwork network(inputLayerSize, hiddenLayerSize, outputLayerSize, learningRate, relativePath, readWeightsAndBiasesFromFile);
+    DeepNeuralNetwork network(inputLayerSize, hiddenLayerSize, outputLayerSize, learningRate, relativePath, readWeightsAndBiasesFromFile);
     HandWrittenDigitTrainingModel model(network, trainingDataSetSize, testDataSetSize, isLittleEndian);
     model.TrainDataSet(epochs, batchSize);
     model.TestDataSet();

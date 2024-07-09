@@ -1,5 +1,6 @@
 #pragma once
-#include "../../deep-learning/lib/neural_network.h"
+// #include "../../deep-learning/lib/neural_network.h"
+#include "../../deep-learning/lib/deep_neural_network.h"
 
 namespace ANEFreeInIty
 {
@@ -22,7 +23,8 @@ namespace ANEFreeInIty
         const int MAGIC_NUMBER_FOR_DATASET_LABEL = 2049;
         std::string RELATIVE_PATH = "./";
 
-        NeuralNetwork _network;
+        // NeuralNetwork _network;
+        DeepNeuralNetwork _network;
         std::vector<std::vector<double>> _trainingImages;
         std::vector<std::vector<double>> _testImages;
         std::vector<double> _trainingLabels;
@@ -43,7 +45,7 @@ namespace ANEFreeInIty
 
     public:
         HandWrittenDigitTrainingModel();
-        HandWrittenDigitTrainingModel(NeuralNetwork network, int trainingDataSetSize, int testDataSetSize, bool isLittleEndian = true);
+        HandWrittenDigitTrainingModel(DeepNeuralNetwork network, int trainingDataSetSize, int testDataSetSize, bool isLittleEndian = true);
         void TrainDataSet(int epochs, int batchSize);
         void PredictDigit();
         void TestDataSet();
