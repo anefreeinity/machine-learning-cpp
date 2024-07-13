@@ -11,7 +11,7 @@ int main()
     const std::vector<int> hiddenLayerSize = {55};
     const int outputLayerSize = 10;
     const double learningRate = 0.04;
-    const int epochs = 7;
+    const int epochs = 1;
     const int batchSize = 32;
     const int trainingDataSetSize = 60000;
     const int testDataSetSize = 10000;

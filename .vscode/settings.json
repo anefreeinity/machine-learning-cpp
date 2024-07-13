@@ -64,5 +64,5 @@
     "regex": "cpp",
     "stack": "cpp"
   },
-  "cSpell.words": ["ANEFREEINITY", "MNIST"]
+  "cSpell.words": ["ANEFREEINITY", "MNIST", "Softmax"]
 }

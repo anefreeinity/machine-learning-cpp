@@ -33,7 +33,9 @@ namespace ANEFreeInIty
         double _learningRate;
         FileSystem _fileSystem;
 
-        double GetNormalizedRandom();
+        double GetNormalizedRandom(int size);
+        double Clip(double value, double min, double max);
+        std::vector<double> ApplyDropout(std::vector<double> layerOutput, double dropoutRate);
         std::vector<double> Forward(std::vector<double> &);
         void BackPropagate(std::vector<double> &, std::vector<double> &);
 

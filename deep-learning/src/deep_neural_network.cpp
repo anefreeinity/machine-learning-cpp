@@ -1,8 +1,10 @@
 #include "../lib/deep_neural_network.h"
 
-double ANEFreeInIty::DeepNeuralNetwork::GetNormalizedRandom()
+double ANEFreeInIty::DeepNeuralNetwork::GetNormalizedRandom(int size)
 {
     return rand() / double(RAND_MAX);
+    // double range = sqrt(6.0 / (size + size)); // Adjusting initialization
+    // return ((rand() / double(RAND_MAX)) * 2 * range) - range;
 }
 
 ANEFreeInIty::DeepNeuralNetwork::DeepNeuralNetwork() {}
@@ -34,11 +36,6 @@ ANEFreeInIty::DeepNeuralNetwork::DeepNeuralNetwork(int inputLayerSize, std::vect
             layer.push_back(std::vector<double>(_hiddenLayerSizes[i], 0.0));
         }
         _hiddenLayerWeights.push_back(layer);
-    }
-
-    for (int i = 0; i < _hiddenLayerWeights.size(); ++i)
-    {
-        std::cout << i + 1 << "hidden layer weight is: " << _hiddenLayerWeights[i].size() << "x" << _hiddenLayerWeights[i][0].size() << std::endl;
     }
     _outputLayerWeights.resize(_hiddenLayerSizes[_hiddenLayerSizes.size() - 1], std::vector<double>(_outputLayerSize, 0.0));
 
@@ -80,7 +77,7 @@ ANEFreeInIty::DeepNeuralNetwork::DeepNeuralNetwork(int inputLayerSize, std::vect
             {
                 for (int k = 0; k < _hiddenLayerSizes[i]; k++)
                 {
-                    _hiddenLayerWeights[i][j][k] = GetNormalizedRandom();
+                    _hiddenLayerWeights[i][j][k] = GetNormalizedRandom(_hiddenLayerSizes[i]);
                 }
             }
         }
@@ -89,7 +86,7 @@ ANEFreeInIty::DeepNeuralNetwork::DeepNeuralNetwork(int inputLayerSize, std::vect
         {
             for (int j = 0; j < _outputLayerSize; j++)
             {
-                _outputLayerWeights[i][j] = GetNormalizedRandom();
+                _outputLayerWeights[i][j] = GetNormalizedRandom(_hiddenLayerSizes[i]);
             }
         }
 
@@ -97,36 +94,25 @@ ANEFreeInIty::DeepNeuralNetwork::DeepNeuralNetwork(int inputLayerSize, std::vect
         {
             for (int j = 0; j < _hiddenLayerSizes[i]; j++)
             {
-                _hiddenLayerBiases[i][j] = GetNormalizedRandom();
+                _hiddenLayerBiases[i][j] = GetNormalizedRandom(_hiddenLayerSizes[i]);
             }
         }
 
         for (int i = 0; i < _outputLayerSize; i++)
         {
-            _outputLayerBiases[i] = GetNormalizedRandom();
+            _outputLayerBiases[i] = GetNormalizedRandom(_outputLayerSize);
         }
     }
 }
 
 std::vector<double> ANEFreeInIty::DeepNeuralNetwork::Forward(std::vector<double> &input)
 {
+    _hiddenLayerCalculatedOutput.clear();
     for (int i = 0; i < _hiddenLayerSizes.size(); i++)
     {
         _hiddenLayerCalculatedOutput.push_back(std::vector<double>(_hiddenLayerSizes[i], 0.0));
     }
     _outputLayerCalculatedOutput.resize(_outputLayerSize, 0.0);
-
-    // std::cout << "stage 1\n";
-
-    // for (int i = 0; i < _hiddenLayerSizes; i++)
-    // {
-    //     double z1 = 0;
-    //     for (int j = 0; j < _inputLayerSize; j++)
-    //     {
-    //         z1 += input[j] * _hiddenLayerWeights[j][i];
-    //     }
-    //     _hiddenLayerCalculatedOutput[i] = ActivationFunction::Sigmoid(z1 + _hiddenLayerBiases[i]);
-    // }
 
     for (int layer = 0; layer < _hiddenLayerSizes.size(); layer++)
     {
@@ -149,7 +135,6 @@ std::vector<double> ANEFreeInIty::DeepNeuralNetwork::Forward(std::vector<double>
             _hiddenLayerCalculatedOutput[layer][i] = ActivationFunction::Sigmoid(z1 + _hiddenLayerBiases[layer][i]);
         }
     }
-    // std::cout << "stage 2\n";
 
     for (int i = 0; i < _outputLayerSize; i++)
     {
@@ -187,22 +172,11 @@ void ANEFreeInIty::DeepNeuralNetwork::BackPropagate(std::vector<double> &input, 
         _outputLayerBiases[i] -= _learningRate * outputLayerErrors[i];
     }
 
-    // std::vector<double> hiddenLayerErrors(_hiddenLayerSizes, 0.0);
     std::vector<std::vector<double>> hiddenLayerErrors;
     for (int i = 0; i < _hiddenLayerSizes.size(); i++)
     {
         hiddenLayerErrors.push_back(std::vector<double>(_hiddenLayerSizes[i], 0.0));
     }
-
-    // for (int i = 0; i < _hiddenLayerSizes; i++)
-    // {
-    //     double sum = 0.0;
-    //     for (int j = 0; j < _outputLayerSize; j++)
-    //     {
-    //         sum += outputLayerErrors[j] * _outputLayerWeights[i][j];
-    //     }
-    //     hiddenLayerErrors[i] = sum * ActivationFunction::SigmoidDerivation(_hiddenLayerCalculatedOutput[i]);
-    // }
 
     for (int layer = _hiddenLayerSizes.size() - 1; layer >= 0; layer--)
     {
